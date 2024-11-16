@@ -151,10 +151,17 @@ public class PlController : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
             direction += Vector3.right;
 
-        if (direction != Vector3.zero)
+        if (Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) > 10f)
         {
+            GetComponent<ShootingSystem>()._isZooming = false;
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             rotationObj.transform.rotation = Quaternion.Slerp(rotationObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        else if(Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) <= 10f)
+        {
+            GetComponent<ShootingSystem>()._isZooming = true;
+            rotationObj.transform.LookAt(GetComponent<ShootingSystem>().GetNearPos());
+            rotationObj.transform.rotation = new Quaternion(0f, rotationObj.transform.rotation.y, rotationObj.transform.rotation.z, rotationObj.transform.rotation.w);
         }
     }
     private void FixedUpdate()
