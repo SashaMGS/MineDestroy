@@ -86,7 +86,7 @@ public class PlController : MonoBehaviour
     private Vector3 velocity; // Вектор движения игрока по оси Y
     private float moveHorizontal; // x
     private float moveVertical; // z
-
+    private Vector3 direction = Vector3.zero;
     //public VariableJoystick variableJoystick; // Скрипт джойстика для управления с телефона (Необходим для управления и для пк) (New)
 
     void Start()
@@ -100,7 +100,8 @@ public class PlController : MonoBehaviour
             StartCoroutine(SoundWalk());
         }
         controller = GetComponent<CharacterController>();
-        headBobScript = GetComponentInChildren<HeadBob>();
+        if (GetComponentInChildren<HeadBob>())
+            headBobScript = GetComponentInChildren<HeadBob>();
     }
 
     void Update()
@@ -130,6 +131,7 @@ public class PlController : MonoBehaviour
 
         Walk();
         Run();
+        RotatePlayer();
         StaminaVoid();
         Events();
 
@@ -138,30 +140,6 @@ public class PlController : MonoBehaviour
             playerAnim.SetBool("Run", isRun);
             playerAnim.SetBool("Walk", isWalk);
             playerAnim.SetBool("isOnGround", isOnGround);
-        }
-
-        Vector3 direction = Vector3.zero;
-
-        if (Input.GetKey(KeyCode.W))
-            direction += Vector3.forward;
-        if (Input.GetKey(KeyCode.S))
-            direction += Vector3.back;
-        if (Input.GetKey(KeyCode.A))
-            direction += Vector3.left;
-        if (Input.GetKey(KeyCode.D))
-            direction += Vector3.right;
-
-        if (Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) > 10f)
-        {
-            GetComponent<ShootingSystem>()._isZooming = false;
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            rotationObj.transform.rotation = Quaternion.Slerp(rotationObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        }
-        else if(Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) <= 10f)
-        {
-            GetComponent<ShootingSystem>()._isZooming = true;
-            rotationObj.transform.LookAt(GetComponent<ShootingSystem>().GetNearPos());
-            rotationObj.transform.rotation = new Quaternion(0f, rotationObj.transform.rotation.y, rotationObj.transform.rotation.z, rotationObj.transform.rotation.w);
         }
     }
     private void FixedUpdate()
@@ -326,6 +304,33 @@ public class PlController : MonoBehaviour
             playerSpeed = walkSpeed;
             isRun = false;
             headBobScript.isRun = false;
+        }
+    }
+
+    private void RotatePlayer()
+    {
+        direction = Vector3.zero;
+
+        if (Input.GetKey(KeyCode.W))
+            direction += Vector3.forward;
+        if (Input.GetKey(KeyCode.S))
+            direction += Vector3.back;
+        if (Input.GetKey(KeyCode.A))
+            direction += Vector3.left;
+        if (Input.GetKey(KeyCode.D))
+            direction += Vector3.right;
+
+        if (Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) > 10f)
+        {
+            GetComponent<ShootingSystem>()._isZooming = false;
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            rotationObj.transform.rotation = Quaternion.Slerp(rotationObj.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        else if (Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) <= 10f)
+        {
+            GetComponent<ShootingSystem>()._isZooming = true;
+            rotationObj.transform.LookAt(GetComponent<ShootingSystem>().GetNearPos());
+            rotationObj.transform.rotation = new Quaternion(0f, rotationObj.transform.rotation.y, rotationObj.transform.rotation.z, rotationObj.transform.rotation.w);
         }
     }
 
