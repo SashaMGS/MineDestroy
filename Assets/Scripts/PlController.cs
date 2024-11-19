@@ -278,7 +278,7 @@ public class PlController : MonoBehaviour
     }
     void Run()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && canRun && staminaCurrent > speedCanRunStamina
+        if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && canRun && staminaCurrent > speedCanRunStamina
             && isCrouching && !isUpBlock && !isLie && canRunPlayer && (moveHorizontal != 0 || moveVertical != 0))
         {
             isCrouching = false;
@@ -287,13 +287,13 @@ public class PlController : MonoBehaviour
             isRun = true;
             headBobScript.isRun = true;
         }
-        else if (canRun && Input.GetKey(KeyCode.LeftShift) && !isCrouching && staminaCurrent > speedCanRunStamina && canRunPlayer && !isLie)
+        else if (canRun && (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && !isCrouching && staminaCurrent > speedCanRunStamina && canRunPlayer && !isLie)
         {
             playerSpeed = runSpeed;
             isRun = true;
             headBobScript.isRun = true;
         }
-        if (Input.GetKeyUp(KeyCode.LeftShift) && !isCrouching && !isLie)
+        if ((Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.RightShift)) && !isCrouching && !isLie)
         {
             playerSpeed = walkSpeed;
             isRun = false;
@@ -311,6 +311,16 @@ public class PlController : MonoBehaviour
     {
         direction = Vector3.zero;
 
+        if (Input.GetAxis("Vertical") > 0)
+            direction += Vector3.forward;
+        if (Input.GetAxis("Vertical") < 0)
+            direction += Vector3.back;
+
+        if (Input.GetAxis("Horizontal") > 0)
+            direction += Vector3.right;
+        if (Input.GetAxis("Horizontal") < 0)
+            direction += Vector3.left;
+        /*
         if (Input.GetKey(KeyCode.W))
             direction += Vector3.forward;
         if (Input.GetKey(KeyCode.S))
@@ -319,7 +329,7 @@ public class PlController : MonoBehaviour
             direction += Vector3.left;
         if (Input.GetKey(KeyCode.D))
             direction += Vector3.right;
-
+        */
         if (Vector3.Distance(transform.position, GetComponent<ShootingSystem>().GetNearPos()) > 10f)
         {
             GetComponent<ShootingSystem>()._isZooming = false;
